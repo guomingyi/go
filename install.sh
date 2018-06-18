@@ -27,4 +27,8 @@ unzip master.zip -d src/github.com/andlabs
 mv src/github.com/andlabs/ui-master/ src/github.com/andlabs/ui
 
 
+#liteide
+wget https://svwh.dl.sourceforge.net/project/liteide/X25.2/liteidex25.2.linux-64.tar.bz2
+#wget https://jaist.dl.sourceforge.net/project/liteide/x33.3/liteidex33.3.linux64-qt5.5.1.tar.gz
+
 exit 0

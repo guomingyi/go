@@ -1,0 +1,15 @@
+#!/bin/bash
+# https://github.com/guomingyi/go.git
+
+git add --all
+
+git commit -am "<$1>"
+
+git remote add origin https://github.com/guomingyi/go.git
+
+
+git pull origin master
+
+git push -u origin master
+
+exit 0

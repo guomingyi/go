@@ -2,6 +2,9 @@
 
 sudo apt-get install -y tree
 sudo apt-get install -y libgtk-3-dev
+sudo apt-get install -y libusb-dev
+sudo apt-get install -y libusb-1.0-0-dev
+
 
 wget https://storage.googleapis.com/golang/go1.8.1.linux-amd64.tar.gz
 tar -C /usr/local -zxvf go1.8.1.linux-amd64.tar.gz

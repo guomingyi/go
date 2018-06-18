@@ -1,8 +1,8 @@
 package main
 
+// #include "../c/inc/usb.h"
 // #include "../c/inc/hello.h"
-// #cgo LDFLAGS: ../c/lib/libhello.a -lm -ldl
-// #cgo pkg-config: gtk+-3.0
+// #cgo LDFLAGS: -L../c/lib -lhello
 import "C"
 
 import (
@@ -17,7 +17,7 @@ func go_print(i C.int) {
 
 func main() {
 	C.hello(9)
-	C.test(6)
+	C.usb_init()
 	fmt.Printf("Hello, world.\n")
 	show_ui()
 }

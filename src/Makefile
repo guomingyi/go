@@ -1,7 +1,7 @@
 # go build
 
 SRCS := *.go
-TARGET := main
+TARGET := factory_test
 release := ../build
 
 FLAG += -v

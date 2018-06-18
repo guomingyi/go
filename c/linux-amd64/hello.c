@@ -7,7 +7,10 @@ void hello(int i)
 	go_print(i*i);
 }
 
-
-
-
+/*
+int main(int argc, char* argv[])
+{
+    return 0;
+}
+*/
 

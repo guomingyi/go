@@ -1,16 +1,19 @@
-NAME = main
-BUILD = ../build
+# go build
+
+SRCS := *.go
+TARGET := main
+release := ../build
 
 FLAG += -v
-FLAG += -x
 FLAG += -work
+# FLAG += -x
 
 all:
-	go build -o $(NAME) $(FLAG) *.go
-	@[ -d ${BUILD} ] || mkdir -p ${BUILD}
-	@mv $(NAME) ../build/
-	@tree ../build/
+	go build -o $(TARGET) $(FLAG) $(SRCS)
+	@[ -d ${release} ] || mkdir -p ${release}
+	@mv $(TARGET) $(release)
+	@tree $(release)
 
 clean:
-	@rm -rf ../build
+	@rm -rf $(release)
 

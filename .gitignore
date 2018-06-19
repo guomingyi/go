@@ -2,6 +2,7 @@ build/
 *.o
 *.a
 *.so
+src/github.com/andlabs/libui
 
 
 

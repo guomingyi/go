@@ -2,7 +2,7 @@
 
 SRCS := *.go
 TARGET := factory_test
-release := ../build
+release := ../bin
 
 FLAG += -v
 FLAG += -work

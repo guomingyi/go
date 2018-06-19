@@ -9,12 +9,12 @@
 
 #gcc -shared -fPIC -o libhello.so usb.c -lusb-1.0 -I/usr/include/libusb-1.0 -std=c99 -L/usr/lib
 
-SRCS := hello.c
-SRCS += test.c
+SRCS :=
+SRCS += usb-hid-api.c
 SRCS += usb.c
 
-TARGET := libhello.so
-BUILD := ../../build
+TARGET := libusb-hid-api.so
+BUILD := ../../bin
 
 LDIR = /usr/lib
 LFLAG = -lusb-1.0
@@ -29,6 +29,7 @@ CFLAG := rv
 all:
 	@rm -rf *.a *.o
 	$(CC) -shared -fPIC -o $(TARGET) $(SRCS) $(CFLAGS)
+	@[ -d ${BUILD} ] || mkdir -p ${BUILD}
 	@cp $(TARGET) $(BUILD)/
 
 clean:

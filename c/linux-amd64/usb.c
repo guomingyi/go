@@ -5,7 +5,7 @@
 #include <unistd.h>
 #include <libusb.h>
 
-#include "../inc/hello.h"
+#include "usb.h"
 
 #define VID 0x534c
 #define PID 0x0001
@@ -16,7 +16,8 @@
 static int action = 0;
 struct libusb_device_handle *handle = NULL;
 
-static int msg_out(char *buf)
+// host -> device
+int usb_msg_out(char *buf)
 {
     char data[64] = {0};
     int actual_len = 0;
@@ -24,14 +25,14 @@ static int msg_out(char *buf)
     sprintf(data, "%s", buf);
     libusb_bulk_transfer(handle, edp2out, data, 64, &actual_len, 0);
     if (actual_len > 0) {
-        printf("HOST send: %s\r\n", data);
         return 0;
     }
-
+    printf("c: send: failed\r\n");
     return -1;
 }
 
-static int msg_in(char *buf)
+// device -> host
+int usb_msg_in(char *buf)
 {
     char data[64] = {0};
     int actual_len = 0;
@@ -39,12 +40,82 @@ static int msg_in(char *buf)
     libusb_bulk_transfer(handle, edp2in, data, 64, &actual_len, 0);
     if (actual_len > 0) {
         memcpy(buf, data, 64);
-        printf("Receiver form DEVICE: %s\r\n", data);
         return 0;
     }
-    
     buf[0] = '\0';
+	printf("c: Receiver err.\r\n");
     return -1;
+}
+
+static libusb_context *usb_ctx = NULL;
+
+int usbdev_init(void)
+{
+    libusb_device **devs;
+    ssize_t cnt;
+    int ret;
+
+    ret = libusb_init(&usb_ctx);
+    if (ret < 0) {
+		printf("libusb_init:err\r\n");
+		return -1;
+	}
+
+    libusb_set_debug(usb_ctx, 3);
+    cnt = libusb_get_device_list(NULL, &devs);
+    if (cnt < 0) {
+        printf("no usb dev on bus\r\n");
+        return  -1;
+    }
+	
+	libusb_free_device_list(devs, 1);
+	return 0;
+}
+
+int usbdev_enumerate(int pid, int vid)
+{
+	int ret;
+	
+	if (usb_ctx == NULL) {
+		printf("usb context not init.\r\n");
+		goto exit;
+	}
+		
+    handle = libusb_open_device_with_vid_pid(usb_ctx, vid, pid);
+    if (handle == NULL) {
+        printf("cant't open device\r\n");
+        goto exit;
+    }
+
+    if (libusb_kernel_driver_active(handle, 0) == 1) {
+        if (libusb_detach_kernel_driver(handle, 0) != 0) {
+            printf("detached kernel driver err!\r\n");
+            goto exit;
+        }
+    }
+
+    ret = libusb_claim_interface(handle, 0);
+    if (ret < 0) {
+        printf("can't claim interface\r\n");
+        goto exit;
+    } 
+	
+	return 0;
+	
+exit:
+    return -1;
+}
+
+int usbdev_close(void)
+{
+	if (handle) {
+		libusb_close(handle);
+		handle = NULL;
+	}
+	
+    libusb_exit(NULL);
+	usb_ctx = NULL;
+	return 0;
 }
 
 //int main(int argc, char* argv[])
@@ -132,8 +203,8 @@ int main2(int argc, char* argv[])
     } 
   
     if (1 == action) {
-        msg_out("Erase fw");
-        msg_in(buf);
+        usb_msg_out("Erase fw");
+        usb_msg_in(buf);
         if (buf[0] == 0) {
             printf("*********exception exit.**********\r\n");
         }
@@ -141,9 +212,10 @@ int main2(int argc, char* argv[])
     }
 
     do {
-        msg_out("test btn.");
-        msg_in(buf);
-        usleep(1000*100);
+        usb_msg_out("test btn.");
+        usb_msg_in(buf);
+       // usleep(1000*100);
+	    sleep(1);
     }
     while(1);
 
@@ -153,12 +225,4 @@ exit:
         libusb_close(handle);
     libusb_exit(NULL);
     return 0;
-}
-
-// go api
-int usb_init(void)
-{
-	printf("[%s] %s:%d\n", __FILE__, __func__, __LINE__);
-	go_print(100);
-    return main2(0, NULL);
 }

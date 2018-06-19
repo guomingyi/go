@@ -11,4 +11,4 @@ export CXX=g++
 export CC=gcc
 
 export PATH=$PATH:$mypath/build
-export LD_LIBRARY_PATH=$mypath/c/lib/
+export LD_LIBRARY_PATH=$mypath/build

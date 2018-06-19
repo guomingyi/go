@@ -2,7 +2,7 @@ package main
 
 // #include "../c/inc/usb.h"
 // #include "../c/inc/hello.h"
-// #cgo LDFLAGS: -L../c/lib -lhello
+// #cgo LDFLAGS: -L../build -lhello
 import "C"
 
 import (

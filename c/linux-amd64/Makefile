@@ -14,7 +14,7 @@ SRCS += test.c
 SRCS += usb.c
 
 TARGET := libhello.so
-BUILD := ../lib
+BUILD := ../../build
 
 LDIR = /usr/lib
 LFLAG = -lusb-1.0
@@ -29,7 +29,7 @@ CFLAG := rv
 all:
 	@rm -rf *.a *.o
 	$(CC) -shared -fPIC -o $(TARGET) $(SRCS) $(CFLAGS)
-	@cp $(TARGET) $(BUILD)
+	@cp $(TARGET) $(BUILD)/
 
 clean:
 	@rm -rf *.a *.o *.so $(BUILD)/$(TARGET)

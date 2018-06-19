@@ -110,11 +110,11 @@ int usbdev_close(void)
 {
 	if (handle) {
 		libusb_close(handle);
+		libusb_exit(NULL);
 		handle = NULL;
+	    usb_ctx = NULL;
 	}
-	
-    libusb_exit(NULL);
-	usb_ctx = NULL;
+
 	return 0;
 }
 

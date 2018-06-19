@@ -7,6 +7,7 @@ import "C"
 import (
 	"fmt"
 	"github.com/andlabs/ui"
+	"strconv"
 	"time"
 	"unsafe"
 )
@@ -30,19 +31,26 @@ func usb_dev_init() int {
 	return ret
 }
 
-func go_usb_write(msg string) {
+func go_usb_write(msg string) int {
+	var ret int = 0
+
 	if msg != "" && len(msg) <= 64 {
 		var buffer []byte
 		buffer = []byte(msg)
-		C.usb_write((*C.char)(unsafe.Pointer(&buffer[0])))
-		fmt.Printf("go usb_write: %s\n", string(buffer[:]))
+		ret = (int)(C.usb_write((*C.char)(unsafe.Pointer(&buffer[0]))))
+		if ret < 0 {
+			fmt.Printf("go usb_write: err!!!\n")
+		} else {
+			fmt.Printf("go usb_write: %s success\n", string(buffer[:]))
+		}
 	}
+	return ret
 }
 
-func go_usb_read() string {
+func go_usb_read() (int, string) {
 	var buffer [64]byte
-	C.usb_read((*C.char)(unsafe.Pointer(&buffer[0])))
-	return string(buffer[:])
+	ret := (int)(C.usb_read((*C.char)(unsafe.Pointer(&buffer[0]))))
+	return ret, string(buffer[:])
 }
 
 func main() {
@@ -91,11 +99,35 @@ func show_ui() {
 }
 
 func counter(label *ui.Label) {
+	var init_retry int = 5
+
 	for {
-		rev := go_usb_read()
+		ret, rev := go_usb_read()
+		if ret < 0 {
+			C.usb_close()
+			time.Sleep(1000 * 1000 * 5000)
+			init_retry--
+			rev = "usb read err, retry:" + strconv.Itoa(init_retry) + " pls wait.."
+			usb_dev_init()
+			if init_retry == 0 {
+				break
+			}
+		} else {
+			if init_retry < 5 && init_retry > 0 {
+				rev = "retry success:%d\n" + strconv.Itoa(init_retry)
+				init_retry = 5
+			}
+		}
+
 		ui.QueueMain(func() {
-			label.SetText("receiver from usbhid: " + rev)
+			label.SetText(rev)
 		})
 		time.Sleep(1000 * 1000)
+	}
+
+	if init_retry == 0 {
+		ui.QueueMain(func() {
+			label.SetText("retry failed, exit.")
+		})
 	}
 }

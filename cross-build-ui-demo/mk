@@ -1,0 +1,26 @@
+#!/bin/bash
+# https://github.com/magJ/go-ui-crossbuild
+
+mydir=$1
+BUILD_OUT=$2
+ARCH=$3
+
+echo "build dir:$mydir"
+
+docker run -it -v $mydir:/go/src magj/go-ui-crossbuild /bin/bash -c " \
+    echo 'export GOARCH=amd64' && \
+    export GOARCH=${ARCH} && \
+    echo 'export CGO_ENABLED=1' && \
+    export CGO_ENABLED=1 && \
+    echo 'Building linux-${ARCH} binary..' && \
+    GOOS=linux CC=clang CXX=clang++ go build -o ${BUILD_OUT}_linux-amd64  && \
+    echo 'Building windows-${ARCH} binary..'
+    GOOS=windows CC=x86_64-w64-mingw32-gcc CXX=x86_64-w64-mingw32-g++ go build -o ${BUILD_OUT}_windows-amd64.exe -ldflags '\-H=windowsgui \-extldflags=-s' && \
+    rm -rf build && mkdir build && \
+    mv ${BUILD_OUT}_linux-amd64 ${BUILD_OUT}_windows-amd64.exe build \
+    "
+    
+# echo 'Building macos-${ARCH} binary..' && \
+# GOOS=darwin CGO_LDFLAGS_ALLOW='\-mmacosx-version-min.*' CC=o64-clang CXX=o64-clang++ go build -o ${BUILD_OUT}_darwin.app && \
+# echo 'ALL DONE!' \
+

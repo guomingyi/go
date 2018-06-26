@@ -1,0 +1,44 @@
+#!/bin/bash
+# https://github.com/magJ/go-ui-crossbuild
+
+mydir=$1
+BUILD_OUT=$2
+RUNOS=$3
+ARCH=$4
+clean=$5
+IMAGE=magj/go-ui-crossbuild
+
+
+if [ "y$clean" = "yclean" ]; then
+	docker run -it -v $mydir:/go/src $IMAGE /bin/bash -c " \
+		echo 'clean ..' && \
+		rm -rf build \
+		"
+	exit 0
+fi 
+
+echo "Cross build: $mydir OUT:$BUILD_OUT OS:$RUNOS ARCH:$ARCH"
+
+if [ "y$RUNOS" = "yLinux" ]; then
+	docker run -it -v $mydir:/go/src $IMAGE /bin/bash -c " \
+		echo 'Building ${BUILD_OUT}_linux-${ARCH} ..' && \
+		GOARCH=${ARCH} CGO_ENABLED=1 GOOS=linux CC=clang CXX=clang++ go build -o ${BUILD_OUT}_$RUNOS-${ARCH}  && \
+		chown 1000:1000 ${BUILD_OUT}_$RUNOS-${ARCH} && \
+		mv ${BUILD_OUT}_$RUNOS-${ARCH} build \
+		"
+	exit 0
+fi 
+
+if [ "y$RUNOS" = "yWindows" ]; then
+	docker run -it -v $mydir:/go/src $IMAGE /bin/bash -c " \
+		echo 'Building ${BUILD_OUT}_windows-${ARCH}.exe ..' && \
+		GOARCH=${ARCH} CGO_ENABLED=1 GOOS=windows CC=x86_64-w64-mingw32-gcc CXX=x86_64-w64-mingw32-g++ go build -o ${BUILD_OUT}_$RUNOS-${ARCH}.exe -ldflags '\-H=windowsgui \-extldflags=-s'  && \
+		chown 1000:1000 ${BUILD_OUT}_$RUNOS-${ARCH}.exe && \
+		mv ${BUILD_OUT}_$RUNOS-${ARCH}.exe build \
+		"
+	exit 0
+fi 
+
+
+
+

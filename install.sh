@@ -20,14 +20,9 @@ echo "export CC=gcc" >> ~/.bashrc
 echo "export PATH=\$PATH:~/tools/liteide/bin" >> ~/.bashrc
 source  ~/.bashrc
 
-#test
-/usr/local/go/bin/go version
-
 #liteide
-wget https://svwh.dl.sourceforge.net/project/liteide/X25.2/liteidex25.2.linux-64.tar.bz2 -q -O ~/tools/liteidex25.2.linux-64.tar.bz2
-tar -C ~/tools/ -xvf ~/tools/liteidex25.2.linux-64.tar.bz2
-wget http://mirrors.kernel.org/ubuntu/pool/main/libp/libpng/libpng12-0_1.2.54-1ubuntu1_amd64.deb -q -O ~/tools/libpng12.deb
-dpkg -i ~/tools/libpng12.deb
+#wget https://svwh.dl.sourceforge.net/project/liteide/X25.2/liteidex25.2.linux-64.tar.bz2 -q -O ~/tools/liteidex25.2.linux-64.tar.bz2
+#tar -C ~/tools/ -xvf ~/tools/liteidex25.2.linux-64.tar.bz2
+#wget http://mirrors.kernel.org/ubuntu/pool/main/libp/libpng/libpng12-0_1.2.54-1ubuntu1_amd64.deb -q -O ~/tools/libpng12.deb
+#dpkg -i ~/tools/libpng12.deb
 
-
-./init.sh

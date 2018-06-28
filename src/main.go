@@ -7,8 +7,10 @@ import (
 
 func main() {
 	fmt.Printf(" test main!\n")
-	Usb_init()
+	//Usb_init()
 	Show_ui()
+	//ShowUI()
+
 }
 
 
